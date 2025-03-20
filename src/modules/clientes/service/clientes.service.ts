@@ -1,5 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { ConflictException, Injectable, Logger } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateClienteDto } from '../dto/create-cliente.dto';
 import { ClienteRepository } from '../repository/cliente.repository';
 import { Cliente } from '../entities/cliente.entity';
@@ -59,10 +64,18 @@ export class ClientesService {
       const clientes = await this.clienteRepository.findAll();
       if (clientes.length === 0) {
         this.logger.warn('A lista de clientes está vazia');
+        throw new NotFoundException('Nenhum cliente encontrado.');
       }
       return clientes;
     } catch (error) {
-      this.handleError(error, 'buscar todos os clientes');
+      if (error instanceof Error) {
+        this.logger.error(`Erro ao buscar todos os clientes: ${error.message}`);
+      } else {
+        this.logger.error(
+          'Erro ao buscar todos os clientes: Erro desconhecido',
+        );
+      }
+      throw new Error('Ocorreu um erro ao buscar os clientes.');
     }
   }
 
@@ -72,6 +85,22 @@ export class ClientesService {
       return await this.clienteRepository.findByEmail(email);
     } catch (error) {
       this.handleError(error, `buscar cliente com email ${email}`);
+    }
+  }
+
+  async getCurrentUserType(email: string): Promise<string> {
+    this.logger.log(`Buscando tipo do cliente ${email}`);
+    try {
+      const cliente = await this.clienteRepository.findByEmail(email);
+      if (!cliente) {
+        this.logger.warn(`Cliente com email ${email} não encontrado`);
+        throw new ConflictException(
+          `Cliente com email ${email} não encontrado`,
+        );
+      }
+      return cliente.tipo;
+    } catch (error) {
+      this.handleError(error, `buscar tipo do cliente ${email}`);
     }
   }
 }

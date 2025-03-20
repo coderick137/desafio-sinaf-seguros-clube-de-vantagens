@@ -37,17 +37,27 @@ export class AuthGuard implements CanActivate {
     const request: Request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Token não encontrado no cabeçalho.');
     }
     try {
+      if (!this.isValidTokenFormat(token)) {
+        throw new UnauthorizedException('Formato de token inválido.');
+      }
       const secret = this.configService.get<string>('JWT_SECRET');
+      if (!secret) {
+        console.error('JWT_SECRET não configurado no ambiente.');
+        throw new UnauthorizedException('Erro interno de configuração.');
+      }
+      console.log('Token recebido:', token);
+      console.log('Segredo usado para verificar:', secret);
       const payload = await this.jwtService.verifyAsync<JwtPayload>(token, {
         secret,
+        algorithms: ['HS256'],
       });
       request.user = payload;
     } catch (error) {
-      console.log(error);
-      throw new UnauthorizedException();
+      console.error('Erro ao verificar o token:', error);
+      throw new UnauthorizedException('Token inválido ou expirado.');
     }
     return true;
   }
@@ -55,5 +65,10 @@ export class AuthGuard implements CanActivate {
   private extractTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
+  }
+
+  private isValidTokenFormat(token: string): boolean {
+    const parts = token.split('.');
+    return parts.length === 3;
   }
 }
