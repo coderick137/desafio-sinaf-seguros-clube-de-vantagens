@@ -1,6 +1,7 @@
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import { CreateRelatorioDto } from './dto/create-relatorio.dto';
-import { UpdateRelatorioDto } from './dto/update-relatorio.dto';
+import { CreateRelatorioDto } from '../dto/create-relatorio.dto';
+import { UpdateRelatorioDto } from '../dto/update-relatorio.dto';
 
 @Injectable()
 export class RelatoriosService {

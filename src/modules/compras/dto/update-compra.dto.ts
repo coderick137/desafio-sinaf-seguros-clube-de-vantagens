@@ -1,4 +1,13 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateCompraDto } from './create-compra.dto';
+/* eslint-disable prettier/prettier */
+import { IsOptional } from 'class-validator';
 
-export class UpdateCompraDto extends PartialType(CreateCompraDto) {}
+export class UpdateCompraDto {
+  @IsOptional()
+  produtosIds?: string[];
+
+  @IsOptional()
+  clienteId?: string;
+
+  @IsOptional()
+  status?: 'pendente' | 'pago' | 'cancelado';
+}

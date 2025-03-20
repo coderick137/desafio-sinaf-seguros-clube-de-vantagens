@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Compra } from '../../compras/entities/compra.entity';
 
 @Entity('produtos')
 export class Produto {
@@ -17,4 +18,7 @@ export class Produto {
 
   @Column('decimal', { precision: 10, scale: 2 })
   preco: number;
+
+  @ManyToMany(() => Compra, (compra) => compra.produtos)
+  compras: Compra[];
 }

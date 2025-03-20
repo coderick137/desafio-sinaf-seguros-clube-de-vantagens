@@ -11,9 +11,15 @@ import {
 import { ProdutoService } from '../service/produto.service';
 import { CreateProdutoDto } from '../dto/create-produto.dto';
 import { UpdateProdutoDto } from '../dto/update-produto.dto';
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Produto } from '../entities/produto.entity';
 
+@ApiTags('Produtos') // Agrupa todas as operações relacionadas a produtos no Swagger
 @Controller('produtos')
 export class ProdutoController {
   constructor(private readonly produtoService: ProdutoService) {}
@@ -21,9 +27,13 @@ export class ProdutoController {
   @Post()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Criar um novo produto' })
-  @ApiResponse({ status: 201, description: 'Produto criado com sucesso.' })
+  @ApiResponse({
+    status: 201,
+    description: 'Produto criado com sucesso.',
+    type: Produto,
+  })
   @ApiResponse({ status: 400, description: 'Dados inválidos.' })
-  create(@Body() createProdutoDto: CreateProdutoDto): Promise<Produto> {
+  async create(@Body() createProdutoDto: CreateProdutoDto): Promise<Produto> {
     return this.produtoService.create(createProdutoDto);
   }
 
@@ -32,32 +42,44 @@ export class ProdutoController {
   @ApiResponse({
     status: 200,
     description: 'Lista de produtos retornada com sucesso.',
+    type: [Produto],
   })
-  findAll() {
+  async findAll(): Promise<Produto[]> {
     return this.produtoService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Obter um produto pelo id' })
-  @ApiResponse({ status: 200, description: 'Produto retornado com sucesso.' })
+  @ApiOperation({ summary: 'Obter um produto pelo ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Produto retornado com sucesso.',
+    type: Produto,
+  })
   @ApiResponse({ status: 404, description: 'Produto não encontrado.' })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<Produto> {
     return this.produtoService.findOne(id);
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Atualizar um produto pelo id' })
-  @ApiResponse({ status: 200, description: 'Produto atualizado com sucesso.' })
+  @ApiOperation({ summary: 'Atualizar um produto pelo ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Produto atualizado com sucesso.',
+    type: Produto,
+  })
   @ApiResponse({ status: 404, description: 'Produto não encontrado.' })
-  update(@Param('id') id: string, @Body() updateProdutoDto: UpdateProdutoDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateProdutoDto: UpdateProdutoDto,
+  ): Promise<Produto> {
     return this.produtoService.update(id, updateProdutoDto);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Remover um produto pelo id' })
+  @ApiOperation({ summary: 'Remover um produto pelo ID' })
   @ApiResponse({ status: 200, description: 'Produto removido com sucesso.' })
   @ApiResponse({ status: 404, description: 'Produto não encontrado.' })
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string): Promise<{ deleted: boolean }> {
     return this.produtoService.remove(id);
   }
 }

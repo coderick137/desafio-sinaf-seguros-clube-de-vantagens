@@ -5,6 +5,10 @@ import * as dotenv from 'dotenv';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ProdutoModule } from './modules/produto/produto.module';
+import { ClientesModule } from './modules/clientes/clientes.module';
+import { ComprasModule } from './modules/compras/compras.module';
+import { PagamentosModule } from './modules/pagamentos/pagamentos.module';
+import { RelatoriosModule } from './modules/relatorios/relatorios.module';
 
 dotenv.config();
 @Module({
@@ -20,6 +24,10 @@ dotenv.config();
       synchronize: true, // Altere para false em produção
     }),
     ProdutoModule,
+    ClientesModule,
+    ComprasModule,
+    PagamentosModule,
+    RelatoriosModule,
   ],
   controllers: [],
   providers: [],

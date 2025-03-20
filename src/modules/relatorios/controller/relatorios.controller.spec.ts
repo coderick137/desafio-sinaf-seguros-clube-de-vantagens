@@ -1,6 +1,7 @@
+/* eslint-disable prettier/prettier */
 import { Test, TestingModule } from '@nestjs/testing';
 import { RelatoriosController } from './relatorios.controller';
-import { RelatoriosService } from './relatorios.service';
+import { RelatoriosService } from '../service/relatorios.service';
 
 describe('RelatoriosController', () => {
   let controller: RelatoriosController;

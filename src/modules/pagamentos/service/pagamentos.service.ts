@@ -1,6 +1,7 @@
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import { CreatePagamentoDto } from './dto/create-pagamento.dto';
-import { UpdatePagamentoDto } from './dto/update-pagamento.dto';
+import { CreatePagamentoDto } from '../dto/create-pagamento.dto';
+import { UpdatePagamentoDto } from '../dto/update-pagamento.dto';
 
 @Injectable()
 export class PagamentosService {

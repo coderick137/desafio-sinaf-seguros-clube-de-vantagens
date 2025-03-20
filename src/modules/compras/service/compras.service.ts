@@ -1,6 +1,7 @@
+/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import { CreateCompraDto } from './dto/create-compra.dto';
-import { UpdateCompraDto } from './dto/update-compra.dto';
+import { CreateCompraDto } from '../dto/create-compra.dto';
+import { UpdateCompraDto } from '../dto/update-compra.dto';
 
 @Injectable()
 export class ComprasService {

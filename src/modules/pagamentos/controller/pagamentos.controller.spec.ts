@@ -1,6 +1,7 @@
+/* eslint-disable prettier/prettier */
 import { Test, TestingModule } from '@nestjs/testing';
 import { PagamentosController } from './pagamentos.controller';
-import { PagamentosService } from './pagamentos.service';
+import { PagamentosService } from '../service/pagamentos.service';
 
 describe('PagamentosController', () => {
   let controller: PagamentosController;

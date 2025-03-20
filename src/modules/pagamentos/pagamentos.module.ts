@@ -1,6 +1,7 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
-import { PagamentosService } from './pagamentos.service';
-import { PagamentosController } from './pagamentos.controller';
+import { PagamentosController } from './controller/pagamentos.controller';
+import { PagamentosService } from './service/pagamentos.service';
 
 @Module({
   controllers: [PagamentosController],

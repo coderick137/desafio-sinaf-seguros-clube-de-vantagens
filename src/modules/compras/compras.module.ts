@@ -1,6 +1,7 @@
+/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
-import { ComprasService } from './compras.service';
-import { ComprasController } from './compras.controller';
+import { ComprasController } from './controller/compras.controller';
+import { ComprasService } from './service/compras.service';
 
 @Module({
   controllers: [ComprasController],
