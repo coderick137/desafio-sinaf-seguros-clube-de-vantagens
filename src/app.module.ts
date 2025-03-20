@@ -9,10 +9,16 @@ import { ClientesModule } from './modules/clientes/clientes.module';
 import { ComprasModule } from './modules/compras/compras.module';
 import { PagamentosModule } from './modules/pagamentos/pagamentos.module';
 import { RelatoriosModule } from './modules/relatorios/relatorios.module';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import configuration from './config/configuration';
 
 dotenv.config();
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      load: [configuration],
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DATABASE_HOST,
@@ -28,6 +34,7 @@ dotenv.config();
     ComprasModule,
     PagamentosModule,
     RelatoriosModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
