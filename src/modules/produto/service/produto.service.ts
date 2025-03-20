@@ -1,26 +1,46 @@
-import { Injectable } from '@nestjs/common';
-import { CreateProdutoDto } from './dto/create-produto.dto';
-import { UpdateProdutoDto } from './dto/update-produto.dto';
+/* eslint-disable prettier/prettier */
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateProdutoDto } from '../dto/create-produto.dto';
+import { UpdateProdutoDto } from '../dto/update-produto.dto';
+import { ProdutoRepository } from '../repository/produto.repository';
+import { Produto } from '../entities/produto.entity';
 
 @Injectable()
 export class ProdutoService {
-  create(createProdutoDto: CreateProdutoDto) {
-    return 'This action adds a new produto';
+  constructor(private readonly produtoRepository: ProdutoRepository) {}
+
+  async create(createProdutoDto: CreateProdutoDto): Promise<Produto> {
+    return this.produtoRepository.create(createProdutoDto);
   }
 
-  findAll() {
-    return `This action returns all produto`;
+  async findAll(): Promise<Produto[]> {
+    return this.produtoRepository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} produto`;
+  async findOne(id: string): Promise<Produto> {
+    const produto = await this.produtoRepository.findOne(id);
+    if (!produto) {
+      throw new NotFoundException(`Produto com ID ${id} não encontrado`);
+    }
+    return produto;
+  }
+  async update(id: string, updateProdutoDto: UpdateProdutoDto) {
+    const produto = await this.produtoRepository.findOne(id);
+    if (!produto) {
+      throw new NotFoundException(`Produto com ID ${id} não encontrado`);
+    }
+    const updatedProduto = { ...produto, ...updateProdutoDto };
+    return this.produtoRepository.update(updatedProduto);
   }
 
-  update(id: number, updateProdutoDto: UpdateProdutoDto) {
-    return `This action updates a #${id} produto`;
-  }
+  async remove(id: string): Promise<{ deleted: boolean }> {
+    const produto = await this.findOne(id);
 
-  remove(id: number) {
-    return `This action removes a #${id} produto`;
+    if (!produto) {
+      throw new NotFoundException(`Produto com ID ${id} não encontrado`);
+    }
+
+    await this.produtoRepository.delete(id);
+    return { deleted: true };
   }
 }
