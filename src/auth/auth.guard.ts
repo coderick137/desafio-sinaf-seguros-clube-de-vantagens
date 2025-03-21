@@ -45,11 +45,8 @@ export class AuthGuard implements CanActivate {
       }
       const secret = this.configService.get<string>('JWT_SECRET');
       if (!secret) {
-        console.error('JWT_SECRET não configurado no ambiente.');
         throw new UnauthorizedException('Erro interno de configuração.');
       }
-      console.log('Token recebido:', token);
-      console.log('Segredo usado para verificar:', secret);
       const payload = await this.jwtService.verifyAsync<JwtPayload>(token, {
         secret,
         algorithms: ['HS256'],
