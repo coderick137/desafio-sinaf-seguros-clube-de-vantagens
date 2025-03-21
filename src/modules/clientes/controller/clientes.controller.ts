@@ -1,14 +1,5 @@
 /* eslint-disable prettier/prettier */
-import {
-  Controller,
-  Post,
-  Body,
-  Get,
-  UseGuards,
-  ForbiddenException,
-  UnauthorizedException,
-  Request,
-} from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, Param } from '@nestjs/common';
 import { ClientesService } from '../service/clientes.service';
 import { CreateClienteDto } from '../dto/create-cliente.dto';
 import {
@@ -51,28 +42,21 @@ export class ClientesController {
   })
   @ApiResponse({ status: 401, description: 'Não autorizado.' })
   @ApiResponse({ status: 403, description: 'Acesso negado.' })
-  async findAll(@Request() req: Request & { user: { tipo: string } }) {
-    try {
-      const user = req.user;
+  async findAll() {
+    return await this.clientesService.findAll();
+  }
 
-      // Verifica se o usuário tem a role 'admin' (já feito pelo RolesGuard)
-      if (user.tipo !== 'admin') {
-        throw new ForbiddenException(
-          'Acesso negado: somente administradores podem acessar esta rota.',
-        );
-      }
-
-      const clientes = await this.clientesService.findAll();
-      console.log('Clientes:', clientes);
-      return clientes;
-    } catch (error: unknown) {
-      if (
-        error instanceof ForbiddenException ||
-        error instanceof UnauthorizedException
-      ) {
-        throw error;
-      }
-      throw new ForbiddenException('Ocorreu um erro desconhecido.');
-    }
+  @Get(':email')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Buscar usuário por email' })
+  @ApiResponse({
+    status: 200,
+    description: 'Usuário encontrado.',
+  })
+  @ApiResponse({ status: 401, description: 'Não autorizado.' })
+  @ApiResponse({ status: 403, description: 'Acesso negado.' })
+  async findByEmail(@Param('email') email: string) {
+    return await this.clientesService.findByEmail(email);
   }
 }
