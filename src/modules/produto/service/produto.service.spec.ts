@@ -45,7 +45,7 @@ describe('ProdutoService', () => {
         preco: 100,
       };
 
-      const produto = { id: '1', ...createProdutoDto };
+      const produto = { id: '550e8400-e29b-41d4-a716-446655440000', ...createProdutoDto };
       mockRepository.create!.mockResolvedValue(produto);
 
       await expect(service.create(createProdutoDto)).resolves.toEqual(produto);
@@ -55,7 +55,7 @@ describe('ProdutoService', () => {
 
   describe('findAll', () => {
     it('Deve rtetornar todos os produtos', async () => {
-      const produtos = [{ id: '1', nome: 'Produto Teste' }];
+      const produtos = [{ id: '550e8400-e29b-41d4-a716-446655440000', nome: 'Produto Teste' }];
       mockRepository.findAll!.mockResolvedValue(produtos);
 
       await expect(service.findAll()).resolves.toEqual(produtos);
@@ -64,8 +64,8 @@ describe('ProdutoService', () => {
   });
 
   describe('findOne', () => {
-    it('Deve retornar um produto expec[ifico de acordo com o id', async () => {
-      const id = '1';
+    it('Deve retornar um produto expecífico de acordo com o id', async () => {
+      const id = '550e8400-e29b-41d4-a716-446655440000';
       const produto = { id, nome: 'Produto Teste' };
       mockRepository.findOne!.mockResolvedValue(produto);
 
@@ -74,7 +74,7 @@ describe('ProdutoService', () => {
     });
 
     it('should throw NotFoundException if produto not found', async () => {
-      const id = '1';
+      const id = '550e8400-e29b-41d4-a716-446655440000';
       mockRepository.findOne!.mockResolvedValue(null);
 
       await expect(service.findOne(id)).rejects.toThrow(

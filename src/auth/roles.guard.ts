@@ -13,7 +13,6 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    console.log('Chamou ===== > RolesGuard');
     try {
       // Obtém as roles permitidas para a rota
       const allowedRoles = this.reflector.get<string[]>(

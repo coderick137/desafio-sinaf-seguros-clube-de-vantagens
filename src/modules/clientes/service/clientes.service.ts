@@ -13,27 +13,16 @@ import * as bcrypt from 'bcryptjs';
 @Injectable()
 export class ClientesService {
   private readonly logger = new Logger(ClientesService.name);
+  private readonly tiposPermitidos = ['admin', 'cliente'];
 
   constructor(private readonly clienteRepository: ClienteRepository) {}
-
-  private handleError(error: unknown, context: string): never {
-    const errorStack = error instanceof Error ? error.stack : undefined;
-    this.logger.error(`Erro ao ${context}`, errorStack);
-    throw error;
-  }
 
   async create(createClienteDto: CreateClienteDto): Promise<Cliente> {
     this.logger.log('Criando um novo cliente');
     try {
       const { nome, email, senha, tipo } = createClienteDto;
 
-      const tiposPermitidos = ['admin', 'cliente'];
-      if (!tiposPermitidos.includes(tipo)) {
-        this.logger.warn(`Tipo de cliente inválido: ${tipo}`);
-        throw new ConflictException(
-          `Tipo de cliente inválido. Permitidos: ${tiposPermitidos.join(', ')}`,
-        );
-      }
+      this.validarTipoCliente(tipo);
 
       const clienteExistente = await this.clienteRepository.findByEmail(email);
       if (clienteExistente) {
@@ -41,8 +30,7 @@ export class ClientesService {
         throw new ConflictException(`Cliente com email ${email} já existe`);
       }
 
-      const salt = await bcrypt.genSalt(10);
-      const senhaHash = await bcrypt.hash(senha, salt);
+      const senhaHash = await this.hashSenha(senha);
 
       const novoCliente = await this.clienteRepository.create({
         nome,
@@ -51,7 +39,7 @@ export class ClientesService {
         tipo,
       });
 
-      this.logger.log(`Cliente criado com sucesso: ${novoCliente.email}`);
+      this.logger.log(`Cliente criado com sucesso: ${novoCliente.nome}`);
       return novoCliente;
     } catch (error) {
       this.handleError(error, 'criar cliente');
@@ -68,14 +56,7 @@ export class ClientesService {
       }
       return clientes;
     } catch (error) {
-      if (error instanceof Error) {
-        this.logger.error(`Erro ao buscar todos os clientes: ${error.message}`);
-      } else {
-        this.logger.error(
-          'Erro ao buscar todos os clientes: Erro desconhecido',
-        );
-      }
-      throw new Error('Ocorreu um erro ao buscar os clientes.');
+      this.handleError(error, 'buscar todos os clientes');
     }
   }
 
@@ -88,19 +69,23 @@ export class ClientesService {
     }
   }
 
-  async getCurrentUserType(email: string): Promise<string> {
-    this.logger.log(`Buscando tipo do cliente ${email}`);
-    try {
-      const cliente = await this.clienteRepository.findByEmail(email);
-      if (!cliente) {
-        this.logger.warn(`Cliente com email ${email} não encontrado`);
-        throw new ConflictException(
-          `Cliente com email ${email} não encontrado`,
-        );
-      }
-      return cliente.tipo;
-    } catch (error) {
-      this.handleError(error, `buscar tipo do cliente ${email}`);
+  private handleError(error: unknown, context: string): never {
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    this.logger.error(`Erro ao ${context}`, errorStack);
+    throw error;
+  }
+
+  private async hashSenha(senha: string): Promise<string> {
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(senha, salt);
+  }
+
+  validarTipoCliente(tipo: string): void {
+    if (!this.tiposPermitidos.includes(tipo)) {
+      this.logger.warn(`Tipo de cliente inválido: ${tipo}`);
+      throw new ConflictException(
+        `Tipo de cliente inválido. Permitidos: ${this.tiposPermitidos.join(', ')}`,
+      );
     }
   }
 }
